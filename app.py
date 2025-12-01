@@ -180,24 +180,7 @@ with col2:
     st.header("Flyer Preview")
 
     if st.button("Generate Flyer"):
-        error_message = ""
-        if not bg_img:
-            error_message += "Please upload a background image."
-
-        if not bg_img:
-            error_message += "Please upload a background image. "
-
-        if not title_text or not subtitle_text:
-            error_message += "Please enter a title and subtitle. "
-
-        if not any([st.session_state.back_list, st.session_state.front_list, st.session_state.other_list]):
-            error_message += "Please upload at least one back, front, or other image. "
-
-        if error_message:
-            st.error(error_message)
-
-        else:
-            bg_img
+        if bg_img:
             # Save temporary background
             bg_temp = "temp_bg.png"
             Image.open(bg_img).save(bg_temp)
@@ -289,8 +272,8 @@ with col2:
             st.session_state.flyer_generated = True
 
 
-        # else:
-        #     st.error("Upload a background image first!")
+        else:
+            st.error("Upload a background image first!")
 
     # ------------------------------------------------
     # RESET BUTTON (Visible only after flyer is generated)
