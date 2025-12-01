@@ -1,0 +1,26 @@
+# Virtual environment
+myenv/
+
+# Local environment files
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Ignore specific files/folders
+wasted/
+images/
+
+# Ignore all .png files
+temp*.png
+
+# Word documents
+*.docx
+
+# Test notebook
+test.ipynb
