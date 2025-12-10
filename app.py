@@ -30,6 +30,9 @@ if "footer_list" not in st.session_state:
 if "flyer_generated" not in st.session_state:
     st.session_state.flyer_generated = False
 
+if "use_footer" not in st.session_state:
+    st.session_state.use_footer = True
+
 
 
 # SIDEBAR: FLYER TYPE CONFIGURATION
@@ -53,10 +56,24 @@ bg_img = st.sidebar.file_uploader("Background Image", type=image_types)
 logo_img = st.sidebar.file_uploader("Logo", type=image_types)
 
 title_text = st.sidebar.text_input("Title", "Enter the product name or title here")
-subtitle_text = st.sidebar.text_input("Subtitle", "Colour:")
-subtitle_desc = st.sidebar.text_area("Subtitle Description",
-                                     "Enter the colour description")
+use_subtitle = st.sidebar.checkbox("Include subtitle?", value=True)
+if use_subtitle:
+    subtitle_text = st.sidebar.text_input("Subtitle", "Colour:")
+    subtitle_desc = st.sidebar.text_area(
+        "Subtitle Description",
+        "Enter the colour description"
+    )
+else:
+    subtitle_text = ""
+    subtitle_desc = ""
+# subtitle_text = st.sidebar.text_input("Subtitle", "Colour:")
+# subtitle_desc = st.sidebar.text_area("Subtitle Description",
+#                                      "Enter the colour description")
 
+
+# -------------------------------
+# FONT SETTINGS
+# -------------------------------
 
 st.sidebar.header("Font Settings")
 
@@ -164,16 +181,18 @@ with col1:
 
     # ---- FOOTER ----
     st.header("Flyer Footer Items")
+    st.session_state.use_footer = st.checkbox("Include footer in design?", value=True)
 
-    with st.expander("Footer Icons + Text"):
-        if st.button("Add Footer Item"):
-            st.session_state.footer_list.append(len(st.session_state.footer_list))
+    if st.session_state.use_footer:
+        with st.expander("Footer Icons + Text"):
+            if st.button("Add Footer Item"):
+                st.session_state.footer_list.append(len(st.session_state.footer_list))
 
-        for idx in st.session_state.footer_list:
-            icon = st.file_uploader(f"Footer Icon {idx+1}", type=image_types, key=f"footer_icon{idx}")
-            txt = st.text_input(f"Footer Text {idx+1}", key=f"footer_txt{idx}")
-            if st.button(f"Remove Footer {idx+1}", key=f"remove_footer{idx}"):
-                st.session_state.footer_list.remove(idx)
+            for idx in st.session_state.footer_list:
+                icon = st.file_uploader(f"Footer Icon {idx+1}", type=image_types, key=f"footer_icon{idx}")
+                txt = st.text_input(f"Footer Text {idx+1}", key=f"footer_txt{idx}")
+                if st.button(f"Remove Footer {idx+1}", key=f"remove_footer{idx}"):
+                    st.session_state.footer_list.remove(idx)
 
 
 with col2:
@@ -220,6 +239,7 @@ with col2:
 
             # Title + Subtitle
             flyer.create_title(title_text)
+
             flyer.create_subtitle(subtitle_text, subtitle_desc)
 
             # Body - back
@@ -249,15 +269,20 @@ with col2:
             flyer.create_body(column=use_two_columns)
 
             # FOOTER
-            for idx in st.session_state.footer_list:
-                icon = st.session_state.get(f"footer_icon{idx}")
-                txt = st.session_state.get(f"footer_txt{idx}", "")
-                if icon:
-                    temp_icon = f"temp_footer_{idx}.png"
-                    Image.open(icon).save(temp_icon)
-                    flyer.fit_footer(temp_icon, txt)
+            if st.session_state.use_footer and st.session_state.footer_list:
+                for idx in st.session_state.footer_list:
+                    icon = st.session_state.get(f"footer_icon{idx}")
+                    txt = st.session_state.get(f"footer_txt{idx}", "")
+                    if icon:
+                        temp_icon = f"temp_footer_{idx}.png"
+                        Image.open(icon).save(temp_icon)
+                        flyer.fit_footer(temp_icon, txt)
 
-            flyer.create_footer()
+                try:
+                    flyer.create_footer()
+                except:
+                    st.error("Upload footer images and their text description")
+
 
             # Show output
             st.success("Flyer generated!")
